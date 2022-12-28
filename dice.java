@@ -14,51 +14,35 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Locale;
 import java.util.Random;
 
-import static jp.test.hello_paper_plugin.Commands.dice.*;
+import static java.lang.Thread.sleep;
+//import static jp.test.hello_paper_plugin.Commands.dice.*;
 
-class Output_message extends Thread{
-
-    @Override
-    public void run(){
-        try {
-            sleep(3000);
-        }catch(InterruptedException e){
-            e.printStackTrace();
-        }
-        p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-        Bukkit.broadcastMessage(out_message);
-        now_dice = false;
-    }
-}
+//class Output_message extends Thread{
+//
+//    @Override
+//    public void run(){
+//        try {
+//            sleep(3000);
+//        }catch(InterruptedException e){
+//            e.printStackTrace();
+//        }
+//        p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+//        Bukkit.broadcastMessage(out_message);
+//        now_dice = false;
+//    }
+//}
 
 
 public class dice implements CommandExecutor{
-    static String out_message;
-    static Boolean now_dice = false;
-    static Player p;
 
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        p = (Player) sender;
+        String out_message;
+        Player p = (Player) sender;
         Random rand = new Random();
         if(args.length == 0){
             //因数していなし
             sender.sendMessage("[Dice]"+"/dice 面の数 回す数");
         }else if(args.length == 1){
-            if(p.isOp() && args[0] == "reset"){
-                now_dice = false;
-                Bukkit.broadcastMessage("[Dice]"+ChatColor.AQUA+"ダイスの状態をリセットしました。");
-                return true;
-            }else if(args[0] == "reset"){
-                sender.sendMessage("[Dice]"+ChatColor.RED+"この操作にはOP権限が必要です！");
-                return true;
-            }
-            //因数長さ1
-            if(now_dice){
-                sender.sendMessage("[Dice]"+ChatColor.RED+"今はほかの人が振っています...");
-                sender.sendMessage("[Dice]もし振っている人がいなければOP権限者に報告してください。");
-                return true;
-            }
-            now_dice = true;
             if(args[0].length() > 8){
                 sender.sendMessage("[Dice]入力は１億以下でお願いします");
                 return true;
@@ -67,20 +51,21 @@ public class dice implements CommandExecutor{
             int dice = Integer.parseInt(args[0]);
             int random_dice = rand.nextInt(dice)+1;
             out_message = "[Dice]"+p.getPlayer().getName() + "が、" + dice + "面ダイスで、" + random_dice + "が当たりました！！";
-            Output_message tt = new Output_message();
-            tt.start();
+            new Thread( () -> {
+                try {
+                    sleep(3000);
+                }catch(InterruptedException e){
+                    e.printStackTrace();
+                }
+                p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                Bukkit.broadcastMessage(out_message);
+            } ).start();
         }else{
             //引数の個数2
             if(args[0].length() > 8 || args[1].length() > 8){
                 sender.sendMessage("[Dice]入力は１億以下でお願いします");
                 return true;
             }
-            if(now_dice){
-                sender.sendMessage("[Dice]"+ChatColor.RED+"今はほかの人が振っています...");
-                sender.sendMessage("[Dice]もし振っている人がいなければOP権限者に報告してください。");
-                return true;
-            }
-            now_dice = true;
             sender.sendMessage("[Dice]"+args[0]+"面のdiceを"+args[1]+"個回しています...");
             int dice = Integer.parseInt(args[0]);
             int dice_kosuu = Integer.parseInt(args[1]);
@@ -95,8 +80,15 @@ public class dice implements CommandExecutor{
                 }
             }
             out_message = "[dice]"+p.getPlayer().getName() + "が、" + dice + "面ダイス"+args[1]+"個で、" + output + "が当たりました！！";
-            Output_message tt = new Output_message();
-            tt.start();
+            new Thread( () -> {
+                try {
+                    sleep(3000);
+                }catch(InterruptedException e){
+                    e.printStackTrace();
+                }
+                p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                Bukkit.broadcastMessage(out_message);
+            } ).start();
         }
         return true;
     }
