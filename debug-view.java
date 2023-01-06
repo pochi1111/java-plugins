@@ -1,29 +1,36 @@
 package test.official_book.official_book;
 
-import org.bukkit.plugin.java.JavaPlugin;
-import test.official_book.official_book.Commands.official_book_open;
-import test.official_book.official_book.Commands.pong;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.entity.Player;
 
-public final class Official_book extends JavaPlugin {
+import java.util.Set;
 
-    public static JavaPlugin plugin;
-    @Override
-    public void onEnable() {
+import static test.official_book.official_book.Official_book.plugin;
 
-        // Plugin startup logic
-        getCommand("official_book_open").setExecutor(new official_book_open());
-        getCommand("ping").setExecutor(new pong());
-        super.onEnable();
-        plugin.saveDefaultConfig();
+public class Listeners implements Listener {
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event){
+        Set<String> UserTags = event.getWhoClicked().getScoreboardTags();
+        if(UserTags.contains("Official_Book_Open")){
+//            String item_name;
+//            item_name = event.getCursor().getItemMeta().getDisplayName();
+//            if(plugin.getConfig().getStringList("books.names").contains(item_name)){
+//                Player e = (Player) event.getWhoClicked();
+//                e.sendMessage("本を開きます");
+//                e.closeInventory();
+//                e.performCommand("official_b "+item_name);
+//                e.getPlayer().removeScoreboardTag("Official_Book_Open");
+//            }
+            event.setCancelled(true);
+        }
     }
-
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-        super.onDisable();
-    }
-
-    public static JavaPlugin getPlugin(){
-        return plugin;
+    public void onInventoryClose(InventoryCloseEvent event){
+        Set<String> UserTags = event.getPlayer().getScoreboardTags();
+        if(UserTags.contains("Official_Book_Open")){
+            event.getPlayer().removeScoreboardTag("Official_Book_Open");
+        }
     }
 }
