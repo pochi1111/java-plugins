@@ -21,7 +21,6 @@ public class Listeners implements Listener {
                 Player e = (Player) event.getWhoClicked();
                 e.sendMessage("本を開きます");
                 e.closeInventory();
-                //ここでバグ
                 e.performCommand("official_b "+item_name);
             }
         }
